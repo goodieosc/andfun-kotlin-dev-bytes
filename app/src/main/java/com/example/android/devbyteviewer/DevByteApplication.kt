@@ -19,9 +19,8 @@ package com.example.android.devbyteviewer
 
 import android.app.Application
 import android.icu.util.TimeUnit
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import android.os.Build
+import androidx.work.*
 import com.example.android.devbyteviewer.work.RefreshDataWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +45,21 @@ class DevByteApplication : Application() {
 
 
     private fun setupRecurringWork() {
-        val repeatingRequest = PeriodicWorkRequestBuilder<RefreshDataWorker>(1,java.util.concurrent.TimeUnit.DAYS).build()
+
+        //Define constraints to prevent work from occurring when there is no network access or the device is low on battery.
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .setRequiresBatteryNotLow(true)
+            .setRequiresCharging(true)
+            .apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    setRequiresDeviceIdle(true)
+                }
+            }.build()
+
+        val repeatingRequest = PeriodicWorkRequestBuilder<RefreshDataWorker>(1,java.util.concurrent.TimeUnit.DAYS)
+            .setConstraints(constraints) //Apply the above constraints.
+            .build()
 
         //Get an instance of WorkManager and call enqueueUniquePeriodicWork to schedule the work.
         WorkManager.getInstance().enqueueUniquePeriodicWork(
