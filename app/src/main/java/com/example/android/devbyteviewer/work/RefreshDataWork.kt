@@ -14,6 +14,10 @@ import retrofit2.HttpException
 // Have RefreshDataWorker extend from the CoroutineWorker class. You also need to pass a Context and WorkerParameters to the class and its parent class.
 class RefreshDataWorker(appContext: Context, params: WorkerParameters): CoroutineWorker(appContext, params) {
 
+    companion object {
+        const val WORK_NAME = "RefreshDataWorker" //define a work name that can be used to uniquely identify this worker.
+    }
+
     //Override the required doWork() method. This is what "work" your RefreshDataWorker does, in our case,
     // syncing with the network. Add variables for the database and the repository.
     override suspend fun doWork(): Result {
