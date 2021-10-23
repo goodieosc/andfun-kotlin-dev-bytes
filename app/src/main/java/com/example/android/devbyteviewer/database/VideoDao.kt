@@ -12,5 +12,5 @@ interface VideoDao {
     fun getVideos(): LiveData<List<DatabaseVideo>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg videos: DatabaseVideo)
+    fun insertAll(vararg videos: DatabaseVideo)  //varrag takes a variable number of arguments
 }
